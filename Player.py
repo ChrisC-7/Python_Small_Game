@@ -10,6 +10,9 @@ class Player:
       self._symbol = symbol
       self._isAI = False
 
+   @property
+   def symbol(self):
+      return self._symbol
 
 
    
