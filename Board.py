@@ -1,4 +1,5 @@
 import Player
+from typing import Tuple
 class Board:
     _board = []
 
@@ -23,8 +24,8 @@ class Board:
             print(' | '.join(self._board[row]))
             if row != self._size - 1:
                 print('-' * (self._size * 4 - 3))
-
     
+
     def check_available(self, x: int, y: int) -> bool:
         """ Checks whether the given coordinates are within board boundaries
             and if the cell is unoccupied.
@@ -94,13 +95,13 @@ class Board:
         """
         count = 0
         symbol = self.get_cell(x, y) 
-        x_in_Board, y_in_Board = x, y       
+        x_in_Board, y_in_Board = x, y  
         while(self.check_in_board(x_in_Board, y_in_Board) and self.get_cell(x_in_Board, y_in_Board) == symbol ):
             count += 1
             x_in_Board += dx
             y_in_Board += dy
 
-        x_in_Board, y_in_Board = x-dx, y-dy
+        x_in_Board, y_in_Board = x - dx, y - dy
         while(self.check_in_board(x_in_Board, y_in_Board) and self.get_cell(x_in_Board, y_in_Board) == symbol ):
             count += 1
             x_in_Board -= dx
@@ -112,11 +113,8 @@ class Board:
 
         Returns:
             bool: true if the board if full
-        """
-        for row in self._board:
-            for piece in row:
-                if piece == ' ': return False
-        return True
+        """  
+        return all(cell != ' ' for row in self._board for cell in row)
 
 
 
