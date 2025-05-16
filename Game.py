@@ -88,25 +88,6 @@ class Game:
             print("Please enter valid x, y")
 
 
-    # def check_win(self, player: Player.Player, x: int, y: int) -> bool:
-    #     """Wheather the player wins
-
-    #     Args:
-    #         player (Player.Player): play who is checking winning now
-    #         x (int): row index
-    #         y (int): col index
-
-    #     Returns:
-    #         bool: true if the play wins
-    #     """
-    #     x_in, y_in = self.convert_to_board_index(x, y)
-    #     directions = [(1,0), (0,1), (1,1), (1,-1)]
-    #     for dx, dy in directions:
-    #         if self._win_condition <= self._board.check_line(x_in, y_in, dx, dy):
-    #             player.mark_as_winner()
-    #             return True
-    #     return False
-
     def check_draw(self) -> bool:
         """Whether the game is a draw
 
