@@ -1,7 +1,7 @@
 ##
 #  This module defines a class that models a player class 
 #
-import Board
+import board
 class Player:
    
    def __init__(self, playOrder = 1, name = "A", symbol = 'x' ):
@@ -18,6 +18,7 @@ class Player:
    @property
    def name(self) -> str:
       return self._name
+   
    def mark_as_winner(self):
       self._isWin = True
    

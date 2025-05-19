@@ -17,6 +17,9 @@ class Board:
         """
         self._board =  [[' ' for _ in range(self._size)] for _ in range(self._size)]
 
+    def get_state(self):
+        return self._board
+    
     def print_board(self):
         """Print the board  
         """
@@ -61,8 +64,6 @@ class Board:
             symbol (str): The symbol need to be set
         """
         self._board[x][y] = symbol
-
-
 
     def get_cell(self, x: int, y: int) -> str:
         """get the symbol at board index x, y
@@ -116,6 +117,20 @@ class Board:
         """  
         return all(cell != ' ' for row in self._board for cell in row)
 
+    def place_piece(self, x: int, y: int, symbol: str) -> bool:
+        """Places the symbol into the board
 
+        Args:
+            symbol (str): The symbol need to be place
+            x (int): row index
+            y (int): col index
+
+        Returns:
+            bool: True if place successfully
+        """
+        if(self.check_available(x, y)): 
+            self.set_piece(x, y, symbol)
+            return True
+        return False
 
 

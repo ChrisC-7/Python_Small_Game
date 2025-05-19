@@ -1,4 +1,4 @@
-import Board 
+import board 
 import Player
 from typing import Tuple
 from Rule import TicTacToeRule
@@ -13,7 +13,7 @@ class Game:
             win_condition (int, optional): The winning condition for this game. Defaults to 3.
         """
 
-        self._board = Board.Board()
+        self._board = board.Board()
         self._player_amount = player_amount
         self._players = []
         self._win_condition = win_condition
@@ -65,10 +65,7 @@ class Game:
             bool: True if place successfully
         """
         x_in, y_in = self.convert_to_board_index(x, y)
-        if(self._board.check_available(x_in, y_in)): 
-            self._board.set_piece(x_in, y_in, symbol)
-            return True
-        return False
+        return self._board.place_piece(x_in, y_in, symbol)
     
     def make_move(self, player:Player.Player) -> Tuple[int, int]:
         """Player makes move

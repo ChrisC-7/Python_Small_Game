@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-import Board, Player
+import board, Player
 
 class IRule(ABC):
 
@@ -14,7 +14,7 @@ class IRule(ABC):
 
 class TicTacToeRule(IRule):
 
-    def __init__(self, board: Board.Board, win_condition: int):
+    def __init__(self, board: board.Board, win_condition: int):
         self._board = board
         self._win_condition = win_condition
 
