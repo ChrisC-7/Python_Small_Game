@@ -3,7 +3,7 @@ import threading
 from common import HOST, PORT, BUFFER_SIZE
 from protocol import encode_message, decode_message
 from online_game import OnlineGame
-import Player
+import player
 
 # create list for multiple players
 clients: list[socket.socket] = []
@@ -13,8 +13,8 @@ addresses: list[socket.AddressInfo] = []
 game = OnlineGame()
 
 players = [
-    Player.Player(1, "Player1", "X"),
-    Player.Player(2, "Player2", "O")
+    player.Player(1, "Player1", "X"),
+    player.Player(2, "Player2", "O")
 ]
 
 game.set_players(players)
@@ -61,11 +61,19 @@ def run_game():
         if game.check_win(turn, x, y):
             for c in clients:
                 c.send(encode_message("result", {"winner": players[turn].id}))
-            break
+            if decode_message(current.recv(BUFFER_SIZE))["action"] == "restart":
+                game.restart_game()
+                turn = 0  # start from Player 1 
+                continue
+            else: break
         elif game.check_draw():
             for c in clients:
                 c.send(encode_message("result", {"winner": None}))
-            break
+            if decode_message(current.recv(BUFFER_SIZE))["action"] == "restart":
+                game.restart_game()
+                turn = 0  # start from Player 1 
+                continue
+            else: break
 
         board = game.board
         for c in clients:

@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, List
 from board import Board
-import Player
+import player
 
 class GameBase(ABC):
 
@@ -20,6 +20,10 @@ class GameBase(ABC):
 
     @abstractmethod
     def check_draw(self) -> bool:
+        pass
+
+    @abstractmethod
+    def restart_game(self):
         pass
 
     

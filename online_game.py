@@ -1,6 +1,6 @@
 # online_game.py
 import board
-import Player
+import player
 from Rule import TicTacToeRule
 from game_base import GameBase
 from typing import List
@@ -13,7 +13,7 @@ class OnlineGame(GameBase):
         self._win_condition = win_condition
         self._rule = TicTacToeRule(self._board, self._win_condition)
 
-    def set_players(self, player_list: List[Player.Player]):
+    def set_players(self, player_list: List[player.Player]):
         self._players = player_list
 
     def place_piece(self, player_id: int, x: int, y: int) -> bool:
@@ -28,3 +28,7 @@ class OnlineGame(GameBase):
 
     def check_draw(self) -> bool:
         return self._rule.is_draw()
+    
+    def restart_game(self):
+        self._board.create_board()
+        

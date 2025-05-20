@@ -1,4 +1,4 @@
-import Player
+import player
 from typing import Tuple
 from copy import deepcopy
 

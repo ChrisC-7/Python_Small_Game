@@ -39,9 +39,15 @@ while True:
             print("Congradulations! You win")
         else:
             print("Sorry, You lose")
-        break
+        
+        choice = input("Play again? (y/n): ")
+        if choice.lower() == 'y':
+            s.send(encode_message("restart", {}))
+        else: break
     elif action == "update":
         print(data["board"])
+
+
 
 # close the connection
 s.close()

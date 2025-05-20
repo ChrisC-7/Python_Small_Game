@@ -1,5 +1,5 @@
 import board 
-import Player
+import player
 from typing import Tuple
 from Rule import TicTacToeRule
 
@@ -27,7 +27,7 @@ class Game:
         for i in range(self._player_amount):        
             name = input("Please input player's name: ")
             symbol = input("Which symbol does this player want to use: ")
-            self._players.append(Player.Player(i, name, symbol))
+            self._players.append(player.Player(i, name, symbol))
     
     def convert_to_board_index(self, x: int, y: int) -> Tuple[int, int]:
         """ Converts user's input coordinates to board indexs
@@ -41,7 +41,7 @@ class Game:
         """
         return x-1, y-1
     
-    def current_player(self, order: int) -> Player.Player:
+    def current_player(self, order: int) -> player.Player:
         """Gets the current player
 
         Args:
@@ -67,7 +67,7 @@ class Game:
         x_in, y_in = self.convert_to_board_index(x, y)
         return self._board.place_piece(x_in, y_in, symbol)
     
-    def make_move(self, player:Player.Player) -> Tuple[int, int]:
+    def make_move(self, player: player.Player) -> Tuple[int, int]:
         """Player makes move
 
         Args:
