@@ -1,6 +1,7 @@
 # game_base.py
 from abc import ABC, abstractmethod
 from typing import Tuple, List
+from board import Board
 import Player
 
 class GameBase(ABC):
@@ -9,8 +10,8 @@ class GameBase(ABC):
     def place_piece(self, player_id: int, x: int, y: int) -> bool:
         pass
 
-    @abstractmethod
-    def get_board_state(self) -> List[List[str]]:
+    
+    def board(self) -> Board:
         pass
 
     @abstractmethod

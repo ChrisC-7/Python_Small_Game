@@ -1,5 +1,7 @@
 import Player
 from typing import Tuple
+from copy import deepcopy
+
 class Board:
     _board = []
 
@@ -18,7 +20,7 @@ class Board:
         self._board =  [[' ' for _ in range(self._size)] for _ in range(self._size)]
 
     def get_state(self):
-        return self._board
+        return deepcopy(self._board)
     
     def print_board(self):
         """Print the board  
@@ -132,5 +134,15 @@ class Board:
             self.set_piece(x, y, symbol)
             return True
         return False
+
+    def __str__(self):
+            result = "    " + "   ".join(str(i) for i in range(self._size)) + "\n"
+            for i, row in enumerate(self._board):
+                row_str = " | ".join(_ for _ in row)
+                result += f"{i} | {row_str} |\n"
+                if i < self._size - 1:  
+                    result += " " + "-----" * self._size + "\n"
+            
+            return result
 
 

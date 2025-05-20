@@ -4,13 +4,17 @@
 import board
 class Player:
    
-   def __init__(self, playOrder = 1, name = "A", symbol = 'x' ):
-      self._playOrder = playOrder
+   def __init__(self, id = 1, name = "A", symbol = 'x' ):
+      self._id = id
       self._name = name
       self._symbol = symbol
       self._isAI = False
       self._isWin = False
 
+   @property
+   def id(self) -> int:
+      return self._id
+   
    @property
    def symbol(self) -> str:
       return self._symbol

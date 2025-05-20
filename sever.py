@@ -1,46 +1,78 @@
 import socket
-from common import HOST, PORT, BUFFER_SIZE, ENCODING
+import threading 
+from common import HOST, PORT, BUFFER_SIZE
 from protocol import encode_message, decode_message
+from online_game import OnlineGame
+import Player
 
-# create socket object to listen for TCP connections.
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# create list for multiple players
+clients: list[socket.socket] = []
+addresses: list[socket.AddressInfo] = []
 
-# Binding IPs and Ports
-s.bind((HOST, PORT))
+# setup for the online game and players
+game = OnlineGame()
 
-# Start listening, waiting for client connection
-s.listen()
-print("Waiting for players' connectinon")
+players = [
+    Player.Player(1, "Player1", "X"),
+    Player.Player(2, "Player2", "O")
+]
 
-# receive one client connection
-clientsocket,addr = s.accept()      
-print("Connected by Address: %s" % str(addr))
+game.set_players(players)
 
 
-while True:
+def wait_for_players():
+    print("Waiting for two players' connection ")
+    # create socket object to listen for TCP connections.
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    # receive data
-    data = clientsocket.recv(BUFFER_SIZE)
+    # Binding IPs and Ports
+    s.bind((HOST, PORT))
 
-    # If empty data, disconnect
-    if not data:
-        break 
-   
-    # decode the message from client
-    msg = decode_message(data)
-    print(f"Received: {msg}")
+    # Start listening, waiting for client connection
+    s.listen()
 
-    # if action is move, print it out
-    if msg["action"] == "move":
-        x = msg["data"]["x"]
-        y = msg["data"]["y"]
-        print(f"The position({x}, {y})")
+    while len(clients) < 2:
+        conn, addr = s.accept()
+        clients.append(conn)
+        addresses.append(addr)
+        conn.send(encode_message("player id", {"id" : len(clients)}))
+        print(f"Player {len(clients)} connection : {addr}")
     
-    # reply status to client
-    reply = {"status" : "ok",
-             "next" : "player2"
-            }
-    clientsocket.send(encode_message("update", reply))
-    
-# close connection
-clientsocket.close()
+
+def run_game():
+    turn = 0
+    while True:
+        current = clients[turn]
+        other = clients[(turn + 1) % 2]
+
+        # told player that what they need to do now
+        other.send(encode_message("wait", {}))
+
+        # receive the place from the player current y
+        current.send(encode_message("your_turn", {}))
+        msg = decode_message(current.recv(BUFFER_SIZE))
+        x, y = msg["data"]["x"], msg["data"]["y"]
+        while not game.place_piece(turn, x, y):
+            current.send(encode_message("your_turn(re)", {}))
+            msg = decode_message(current.recv(BUFFER_SIZE))
+            x, y = msg["data"]["x"], msg["data"]["y"]
+
+        # check win or draw
+        if game.check_win(turn, x, y):
+            for c in clients:
+                c.send(encode_message("result", {"winner": players[turn].id}))
+            break
+        elif game.check_draw():
+            for c in clients:
+                c.send(encode_message("result", {"winner": None}))
+            break
+
+        board = game.board
+        for c in clients:
+            c.send(encode_message("update", {"board": str(board)}))
+
+        turn = (turn + 1) %2
+
+if __name__ == "__main__":
+    wait_for_players()
+    run_game()

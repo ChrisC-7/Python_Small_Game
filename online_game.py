@@ -17,10 +17,11 @@ class OnlineGame(GameBase):
         self._players = player_list
 
     def place_piece(self, player_id: int, x: int, y: int) -> bool:
-        return self._board.set_piece(x - 1, y - 1, self._players[player_id].symbol)
+        return self._board.place_piece(x - 1, y - 1, self._players[player_id].symbol)
 
-    def get_board_state(self):
-        return self._board.get_state()
+    @property
+    def board(self):
+        return self._board
 
     def check_win(self, player_id: int, x: int, y: int) -> bool:
         return self._rule.is_win(self._players[player_id], x, y)
