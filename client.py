@@ -3,6 +3,13 @@ from common import HOST, PORT, BUFFER_SIZE, ENCODING
 from protocol import encode_message, decode_message
 import board
 
+def get_numeric_input(prompt: str) -> int:
+    while True:
+        try:
+            return int(input(prompt))
+        except ValueError:
+            print("❌ Please enter a valid number.")
+
 # create socket object, based on TCP agreement
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -20,14 +27,14 @@ while True:
     data = msg["data"]
     if action == "your_turn" :
         print("It's your turn now! ")
-        x = int(input("Input row (x): "))
-        y = int(input("Input col (y): "))
+        x = get_numeric_input("Input row (x): ")
+        y = get_numeric_input("Input col (y): ")
         # send the placement's info as networking message
         s.send(encode_message("move", {"x": x, "y": y}))
     elif action == "your_turn(re)" :
         print("Your input is not valid, please re-enter")
-        x = int(input("Input row (x): "))
-        y = int(input("Input col (y): "))
+        x = get_numeric_input("Input row (x): ")
+        y = get_numeric_input("Input col (y): ")
         # send the placement's info as networking message
         s.send(encode_message("move", {"x": x, "y": y}))
     elif action == "wait":

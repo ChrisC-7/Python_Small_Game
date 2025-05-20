@@ -25,10 +25,7 @@ class Board:
     def print_board(self):
         """Print the board  
         """
-        for row in range(self._size):
-            print(' | '.join(self._board[row]))
-            if row != self._size - 1:
-                print('-' * (self._size * 4 - 3))
+        print(self)
     
 
     def check_available(self, x: int, y: int) -> bool:

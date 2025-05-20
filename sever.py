@@ -5,6 +5,13 @@ from protocol import encode_message, decode_message
 from online_game import OnlineGame
 import player
 
+LOG_FILE = "game_log.txt"
+
+def log(message: str):
+    with open(LOG_FILE) as f:
+        f.write(message + "\n")
+
+
 # create list for multiple players
 clients: list[socket.socket] = []
 addresses: list[socket.AddressInfo] = []
@@ -41,6 +48,7 @@ def wait_for_players():
 
 def run_game():
     turn = 0
+    log("\n=== New Game Start ===")
     while True:
         current = clients[turn]
         other = clients[(turn + 1) % 2]

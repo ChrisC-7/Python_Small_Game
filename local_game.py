@@ -39,7 +39,7 @@ class LocalGame(GameBase):
             x = int(input("Enter row (x): "))
             y = int(input("Enter col (y): "))
             if self.place_piece(turn, x, y):
-                self._board.print_board()
+                print(self._board)
                 if self.check_win(turn, x, y) or self.check_draw():
                     if self.check_win(turn, x, y):
                         print(f"{player.name} wins!")
