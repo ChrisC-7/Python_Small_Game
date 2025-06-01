@@ -13,7 +13,7 @@ class OnlineGame(GameBase):
         self._win_condition = win_condition
         self._rule = TicTacToeRule(self._board, self._win_condition)
 
-    def set_players(self, player_list: List[player.Player]):
+    def set_players(self, player_list: List[player.Human_Player]):
         self._players = player_list
 
     def place_piece(self, player_id: int, x: int, y: int) -> bool:

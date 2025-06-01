@@ -4,7 +4,7 @@ import board, player
 class IRule(ABC):
 
     @abstractmethod
-    def is_win(self, player: player.Player, x: int, y: int) -> bool:
+    def is_win(self, player: player.Human_Player, x: int, y: int) -> bool:
         pass
 
     @abstractmethod
@@ -19,7 +19,7 @@ class TicTacToeRule(IRule):
         self._win_condition = win_condition
 
 
-    def is_win(self, player: player.Player, x: int, y: int) -> bool:
+    def is_win(self, player: player.Human_Player, x: int, y: int) -> bool:
         x_in, y_in = x-1, y-1
         directions = [(1,0), (0,1), (1,1), (1,-1)]
         for dx, dy in directions:

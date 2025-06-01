@@ -20,8 +20,8 @@ addresses: list[socket.AddressInfo] = []
 game = OnlineGame()
 
 players = [
-    player.Player(1, "Player1", "X"),
-    player.Player(2, "Player2", "O")
+    player.Human_Player(1, "Player1", "X"),
+    player.Human_Player(2, "Player2", "O")
 ]
 
 game.set_players(players)
@@ -49,6 +49,7 @@ def wait_for_players():
 def run_game():
     turn = 0
     log("\n=== New Game Start ===")
+    turn_count = 0
     while True:
         current = clients[turn]
         other = clients[(turn + 1) % 2]
@@ -65,21 +66,30 @@ def run_game():
             msg = decode_message(current.recv(BUFFER_SIZE))
             x, y = msg["data"]["x"], msg["data"]["y"]
 
+        symbol = players[turn].symbol
+        turn_count += 1
+        log(f"Turn {turn_count}: Player {players[turn].id} ({symbol}) placed at ({x}, {y})")
         # check win or draw
         if game.check_win(turn, x, y):
+            log(f"Winner: Player {players[turn].id} ({players[turn].symbol})")
             for c in clients:
                 c.send(encode_message("result", {"winner": players[turn].id}))
             if decode_message(current.recv(BUFFER_SIZE))["action"] == "restart":
                 game.restart_game()
                 turn = 0  # start from Player 1 
+                turn_count = 0
+                log("=== Game End ===\n")
                 continue
             else: break
         elif game.check_draw():
+            log("Result: Draw")
             for c in clients:
                 c.send(encode_message("result", {"winner": None}))
             if decode_message(current.recv(BUFFER_SIZE))["action"] == "restart":
                 game.restart_game()
                 turn = 0  # start from Player 1 
+                turn_count = 0
+                log("=== Game End ===\n")
                 continue
             else: break
 

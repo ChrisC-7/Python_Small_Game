@@ -1,6 +1,8 @@
 import player
 from typing import Tuple
 from copy import deepcopy
+from colorama import Fore, Style, init
+init(autoreset=True)
 
 class Board:
     _board = []
@@ -133,7 +135,7 @@ class Board:
         return False
 
     def __str__(self):
-            result = "    " + "   ".join(str(i) for i in range(self._size)) + "\n"
+            result = "    " + "   ".join(str(i) for i in range(1, self._size + 1)) + "\n"
             for i, row in enumerate(self._board):
                 row_str = " | ".join(_ for _ in row)
                 result += f"{i} | {row_str} |\n"
