@@ -1,8 +1,8 @@
 # local_game.py
-import board
-import player
-from rule import TicTacToeRule
-from game_base import GameBase
+import gameLogic.board as board
+import gameLogic.player as player
+from gameLogic.rule import TicTacToeRule
+from gameLogic.game_base import GameBase
 from utils.log_utils import GameLogger
 
 

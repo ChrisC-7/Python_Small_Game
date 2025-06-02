@@ -1,8 +1,8 @@
 # game_base.py
 from abc import ABC, abstractmethod
 from typing import Tuple, List
-from board import Board
-import player
+from gameLogic.board import Board
+# import player
 
 class GameBase(ABC):
 

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-import board, player
+import gameLogic.board as board
+import gameLogic.player as player
 
 class IRule(ABC):
 

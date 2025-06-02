@@ -1,7 +1,7 @@
 ##
 #  This module defines a class that models a player class 
 #
-import board
+# import board
 from abc import ABC, abstractmethod 
 import random
 from typing import List, Tuple
