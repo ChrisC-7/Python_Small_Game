@@ -1,9 +1,9 @@
 # local_game.py
 import board
 import player
-from Rule import TicTacToeRule
+from rule import TicTacToeRule
 from game_base import GameBase
-from log_utils import GameLogger
+from utils.log_utils import GameLogger
 
 
 class LocalGame(GameBase):
@@ -26,7 +26,8 @@ class LocalGame(GameBase):
             symbol = input(f"Enter Player {i + 1} symbol: ")
             is_ai = input(f"Is Player {i + 1} an AI player? (y/n): ").lower()=='y'
             if is_ai:
-                self._players.append(player.AIPlayer(i, name, symbol))
+                self._players.append(player.QLearningAIPlayer(i, name, symbol))
+                self._players[i].load_q_table("q_model.json")
             else:
                 self._players.append(player.Human_Player(i, name, symbol))
 
