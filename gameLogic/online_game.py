@@ -1,7 +1,7 @@
 # online_game.py
 import board
 import player
-from Rule import TicTacToeRule
+from rule import TicTacToeRule
 from game_base import GameBase
 from typing import List
 

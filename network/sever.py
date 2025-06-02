@@ -2,8 +2,8 @@ import socket
 import threading 
 from common import HOST, PORT, BUFFER_SIZE
 from protocol import encode_message, decode_message
-from online_game import OnlineGame
-import player
+from gameLogic.online_game import OnlineGame
+import gameLogic.player as player
 
 LOG_FILE = "game_log.txt"
 
