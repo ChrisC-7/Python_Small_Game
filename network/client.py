@@ -8,7 +8,7 @@ def get_numeric_input(prompt: str) -> int:
         try:
             return int(input(prompt))
         except ValueError:
-            print("❌ Please enter a valid number.")
+            print("Please enter a valid number.")
 
 # create socket object, based on TCP agreement
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -16,9 +16,14 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # connect to the sever
 s.connect((HOST, PORT))
 
+
 msg = decode_message(s.recv(BUFFER_SIZE))
 player_id = msg["data"]["id"]
-
+name = input("Please input your player's name: ")
+symbol = input("Please input your player's symbol(one character): ")
+s.send(encode_message("intro",
+                      {"name" : name, 
+                       "symbol" : symbol[0] }))
 
 # enter the loop, get the piece placement by user's input x, y
 while True:

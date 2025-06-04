@@ -1,34 +1,39 @@
 # online_game.py
-import board
-import player
-from rule import TicTacToeRule
-from game_base import GameBase
+from gameLogic.board import Board
+from gameLogic.player import Player, Human_Player, AIPlayer, QLearningAIPlayer
+from gameLogic.rule import TicTacToeRule
+from gameLogic.game_base import GameBase
+from gameLogic.engine import GameEngine
 from typing import List
 
-class OnlineGame(GameBase):
+class OnlineGame():
 
-    def __init__(self, win_condition=3):
-        self._board = board.Board()
-        self._players = []
-        self._win_condition = win_condition
-        self._rule = TicTacToeRule(self._board, self._win_condition)
+    def __init__(self, mode = "tictatoe"):
+        if mode == "tictatoe":
+            self.engine = GameEngine(3, 3)
+        else: 
+            self.engine = GameEngine(15, 5)
+        self.players = []
 
-    def set_players(self, player_list: List[player.Human_Player]):
+    def set_players(self, player_list: List[Player]):
         self._players = player_list
+        self.engine.players = player_list
 
-    def place_piece(self, player_id: int, x: int, y: int) -> bool:
-        return self._board.place_piece(x - 1, y - 1, self._players[player_id].symbol)
-
-    @property
-    def board(self):
-        return self._board
-
-    def check_win(self, player_id: int, x: int, y: int) -> bool:
-        return self._rule.is_win(self._players[player_id], x, y)
-
-    def check_draw(self) -> bool:
-        return self._rule.is_draw()
-    
-    def restart_game(self):
-        self._board.create_board()
+    def current_player_id(self):
+        return self.engine.current_player().id
         
+    def is_player_turn(self, player_id: int) -> bool: 
+        return self.current_player_id() == player_id
+
+    def try_place(self, player_id: int, x: int, y: int) ->str:
+        if not self.is_player_turn(player_id):
+            return "not_your_turn"
+        result = self.engine.place_piece(x, y)
+        return result if result else "invalid"
+    
+    def get_board_str(self) -> str:
+        return str(self.engine.board)
+    
+    def restart(self):
+        self.engine.restart_game()
+

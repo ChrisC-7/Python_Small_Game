@@ -46,4 +46,8 @@ class GameController:
         self.make_move(x - 1, y - 1)
 
     def restart(self):
-        self.__init__()
+        self.board.create_board()
+        self.rule = TicTacToeRule(self.board, 5)
+        self.turn = 0
+        self.finished = False
+        events.emit("game_over", "New game started!") 

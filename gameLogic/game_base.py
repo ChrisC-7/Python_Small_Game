@@ -1,8 +1,6 @@
 # game_base.py
 from abc import ABC, abstractmethod
-from typing import Tuple, List
 from gameLogic.board import Board
-# import player
 
 class GameBase(ABC):
 
@@ -10,7 +8,7 @@ class GameBase(ABC):
     def place_piece(self, player_id: int, x: int, y: int) -> bool:
         pass
 
-    
+    @property
     def board(self) -> Board:
         pass
 
