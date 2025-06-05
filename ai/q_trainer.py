@@ -1,22 +1,24 @@
 from gameLogic.player import QLearningAIPlayer, AIPlayer
 from gameLogic.board import Board
 from gameLogic.rule import TicTacToeRule
+from ai.ai_strategy import QLearningStrategy
 import random
 import json
 import os
 
 SAVE_PATH = "q_model.json"
-NUM_EPISODES = 10000 
-SAVE_EVERY = 1000
+NUM_EPISODES = 100000 
+SAVE_EVERY = 10000
 WIN_CONDITION = 5
 BOARD_SIZE = 15
 
 def create_players():
-    p1 = QLearningAIPlayer(0, "QL-1", "X")
-    p2 = QLearningAIPlayer(1, "QL-2", "O")
-    p1.load_q_table(SAVE_PATH)
-    p3 = AIPlayer(2, "R", "r")
-    return p1, p2
+    s1 = QLearningStrategy()
+    p1 = AIPlayer(0, "QL-1", "X", s1)
+    p2 = AIPlayer(1, "QL-2", "O", s1)
+    p1.set_opponent(p2)
+    p2.set_opponent(p1)
+    return p1, p2, s1
 
 
 def run_episode(p1, p2):

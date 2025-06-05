@@ -82,7 +82,7 @@ class Board:
 
 
      # get how many symbol we have in a line
-    def check_line(self, x: int, y: int, dx: int, dy: int) -> int:
+    def check_line(self, symbol: str, x: int, y: int, dx: int, dy: int) -> int:
         """Counts the number of consecutive identical symbols in a line 
             passing through the given position.
 
@@ -96,7 +96,6 @@ class Board:
             int: the amount of pieces in one line
         """
         count = 0
-        symbol = self.get_cell(x, y) 
         x_in_Board, y_in_Board = x, y  
         while(self.check_in_board(x_in_Board, y_in_Board) and self.get_cell(x_in_Board, y_in_Board) == symbol ):
             count += 1

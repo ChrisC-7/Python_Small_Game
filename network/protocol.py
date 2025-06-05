@@ -1,5 +1,5 @@
 import json
-from common import ENCODING
+from network.common import ENCODING
 
 def encode_message(action: str, data: dict) -> bytes:
     msg = {"action" : action,

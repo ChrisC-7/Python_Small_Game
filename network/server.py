@@ -2,12 +2,14 @@ import socket
 from network.common import HOST, PORT, BUFFER_SIZE
 from network.protocol import encode_message, decode_message
 from gameLogic.online_game import OnlineGame
-from gameLogic.player import Human_Player
+from gameLogic.player import Player, Human_Player
+from utils.log_utils import GameLogger
+from typing import List
 
 LOG_FILE = "game_log.txt"
 
 def log(message: str):
-    with open(LOG_FILE) as f:
+    with open(LOG_FILE, "a", encoding = "utf-8") as f:
         f.write(message + "\n")
 
 
@@ -18,7 +20,7 @@ addresses: list[socket.AddressInfo] = []
 # setup for the online game and players
 game = OnlineGame()
 
-players = []
+players:List[Player] = []
 
 game.set_players(players)
 
@@ -51,6 +53,7 @@ def run_game():
         current = clients[turn]
         other = clients[(turn + 1) % 2]
         current_player_id = turn
+        player = players[turn]
 
         # told player that what they need to do now
         other.send(encode_message("wait", {}))
@@ -60,22 +63,25 @@ def run_game():
         msg = decode_message(current.recv(BUFFER_SIZE))
         x, y = msg["data"]["x"], msg["data"]["y"]
 
-        result = game.try_place(current_player_id, x, y)
+        result = game.place_and_check(current_player_id, x, y)
         while result == "invalid":
             current.send(encode_message("your_turn(re)", {}))
             msg = decode_message(current.recv(BUFFER_SIZE))
             x, y = msg["data"]["x"], msg["data"]["y"]
-            result = game.try_place(current_player_id, x, y)
-
+            result = game.place_and_check(current_player_id, x, y)
+        log(f"Player {player.id} ({player.symbol}) placed at ({x}, {y})")
         for c in clients:
             c.send(encode_message("update", {"board": game.get_board_str()}))            
 
         if result == "win":
+            winner = game.get_winner()
             for c in clients:
-                c.send(encode_message("result", {"winner": current_player_id}))
+                c.send(encode_message("result", {"winner": winner}))
+            log(f"Player {winner} ({player.symbol}) wins!")
         elif result == "draw":
             for c in clients:
                 c.send(encode_message("result", {"winner": None}))
+            log(f"Game ends in a draw.")
         else:
             turn = (turn + 1) % 2
             continue
@@ -83,11 +89,12 @@ def run_game():
         msg = decode_message(current.recv(BUFFER_SIZE))
         if msg["action"] == "restart":
             game.restart()
+            log("Game restarted by player request.")
             turn = 0
         else:
             break
 
-    print("🏁 Game ended.")
+    print("Game ended.")
     for c in clients:
         c.close()
         # symbol = players[turn].symbol

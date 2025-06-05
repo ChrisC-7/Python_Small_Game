@@ -24,7 +24,7 @@ class TicTacToeRule(IRule):
         x_in, y_in = x-1, y-1
         directions = [(1,0), (0,1), (1,1), (1,-1)]
         for dx, dy in directions:
-            if self._win_condition <= self._board.check_line(x_in, y_in, dx, dy):
+            if self._win_condition <= self._board.check_line(player.symbol, x_in, y_in, dx, dy):
                 return True
         return False
 

@@ -1,6 +1,6 @@
 import socket
-from common import HOST, PORT, BUFFER_SIZE, ENCODING
-from protocol import encode_message, decode_message
+from network.common import HOST, PORT, BUFFER_SIZE, ENCODING
+from network.protocol import encode_message, decode_message
 import gameLogic.board as board
 
 def get_numeric_input(prompt: str) -> int:

@@ -1,6 +1,6 @@
 # local_game.py
 import gameLogic.board as board
-import gameLogic.player as player
+from gameLogic.player import Player, Human_Player, QLearningAIPlayer, RuleBasedAIPlayer
 from gameLogic.rule import TicTacToeRule
 from gameLogic.game_base import GameBase
 from utils.log_utils import GameLogger
@@ -9,7 +9,7 @@ from gameLogic.engine import GameEngine
 class LocalGame():
 
     def __init__(self, mode = "tictatoe"):
-        self._players : list[player.Human_Player] = []
+        self._players : list[Human_Player] = []
         self.init_players()
         if mode == "tictatoe":
             self.engine = GameEngine(3, 3, self._players, GameLogger())
@@ -22,10 +22,10 @@ class LocalGame():
             symbol = input(f"Enter Player {i + 1} symbol: ")
             is_ai = input(f"Is Player {i + 1} an AI player? (y/n): ").lower()=='y'
             if is_ai:
-                self._players.append(player.QLearningAIPlayer(i, name, symbol))
-                self._players[i].load_q_table("q_model.json")
+                self._players.append(RuleBasedAIPlayer(i, name, symbol))
+                # self._players[i].load_q_table("gameLogic/q_model.json")
             else:
-                self._players.append(player.Human_Player(i, name, symbol))
+                self._players.append(Human_Player(i, name, symbol))
 
     # def place_piece(self, player_id: int, x: int, y: int) -> bool:
     #     return self._board.place_piece(x - 1, y - 1, self._players[player_id].symbol)
@@ -101,6 +101,6 @@ class LocalGame():
     #     self._logger = GameLogger()
 
 if __name__ == "__main__":
-    g = LocalGame()
+    g = LocalGame('gomoku')
     g.play()
 
