@@ -10,24 +10,37 @@ def get_numeric_input(prompt: str) -> int:
         except ValueError:
             print("Please enter a valid number.")
 
-# create socket object, based on TCP agreement
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# # create socket object, based on TCP agreement
+# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# connect to the sever
-s.connect((HOST, PORT))
+# # connect to the sever
+# s.connect((HOST, PORT))
 
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((HOST, PORT))
+    print("[Client] Connected to server.")
+except Exception as e:
+    print(f"[Client] Failed to connect: {e}")
+    exit(1)
+name = input("Please input your player's name: ")
+symbol = input("Please input your player's symbol(one character): ")
+s.send(encode_message("intro", {"name": name, "symbol": symbol[0]}))
+# msg = decode_message(s.recv(BUFFER_SIZE))
 
 msg = decode_message(s.recv(BUFFER_SIZE))
 player_id = msg["data"]["id"]
-name = input("Please input your player's name: ")
-symbol = input("Please input your player's symbol(one character): ")
-s.send(encode_message("intro",
-                      {"name" : name, 
-                       "symbol" : symbol[0] }))
+# name = input("Please input your player's name: ")
+# symbol = input("Please input your player's symbol(one character): ")
+# s.send(encode_message("intro",
+#                       {"name" : name, 
+#                        "symbol" : symbol[0] }))
 
 # enter the loop, get the piece placement by user's input x, y
 while True:
-    msg = decode_message(s.recv(BUFFER_SIZE))
+    print("[Client] Waiting for message...")
+    msg1 = s.recv(BUFFER_SIZE) 
+    msg = decode_message(msg1)
     action = msg["action"]
     data = msg["data"]
     if action == "your_turn" :

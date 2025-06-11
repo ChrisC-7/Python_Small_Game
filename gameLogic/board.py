@@ -137,7 +137,7 @@ class Board:
             result = "    " + "   ".join(str(i) for i in range(1, self._size + 1)) + "\n"
             for i, row in enumerate(self._board):
                 row_str = " | ".join(_ for _ in row)
-                result += f"{i} | {row_str} |\n"
+                result += f"{i+1} | {row_str} |\n"
                 if i < self._size - 1:  
                     result += " " + "-----" * self._size + "\n"
             

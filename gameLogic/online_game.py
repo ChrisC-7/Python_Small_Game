@@ -1,6 +1,6 @@
 # online_game.py
 from gameLogic.board import Board
-from gameLogic.player import Player, Human_Player, AIPlayer, QLearningAIPlayer
+from gameLogic.player import Player, AIPlayer
 from gameLogic.rule import TicTacToeRule
 from gameLogic.game_base import GameBase
 from gameLogic.engine import GameEngine

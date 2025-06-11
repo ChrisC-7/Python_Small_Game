@@ -1,34 +1,61 @@
 from gameLogic.board import Board
 from gameLogic.rule import TicTacToeRule
-from gameLogic.player import Player, Human_Player, AIPlayer, QLearningAIPlayer
+from gameLogic.player import Player, Human_Player, AIPlayer
 from utils.log_utils import GameLogger
 from gameLogic.game_base import GameBase
+from utils.events import (MovePlacedEvent, GameWonEvent, GameDrawEvent, InvalidMoveEvent)
+from utils.dispatcher import EventDispatcher
 from typing import List
 
 class GameEngine(GameBase):
-    def __init__(self, board_size = 3, win_condition = 3, players = None, logger = None):
+    def __init__(self, board_size = 3, win_condition = 3, players = None, logger = None, dispatcher:EventDispatcher=None):
         self._board = Board(board_size)
         self.rule = TicTacToeRule(self.board, win_condition)
         self.players:List[Player] = players or []
         self.logger:GameLogger = logger
         self.turn = 0
         self.finished = False
+        self.dispatcher = dispatcher
 
     def place_piece(self, x, y):
         player = self.players[self.turn]
         if not self.board.check_available(x-1, y-1) or self.finished:
-            return False
+            event = InvalidMoveEvent()
+            if self.dispatcher:
+                self.dispatcher.handle(event)
+            return event
         
         self.board.set_piece(x-1, y-1, player.symbol)
-        if self.logger:
-            self.logger.log_step(player.name, player.id, player.symbol, x, y, self.board.get_state())
+        move_event = MovePlacedEvent(x, y, player, self.board)
+        if self.dispatcher:
+            self.dispatcher.handle(move_event)
+
+        # 再判断是否胜利或平局
         if self.check_win(self.turn, x, y):
-            return "win"
+            end_event = GameWonEvent(player)
+            self.finished = True
         elif self.check_draw():
-            return "draw"
+            end_event = GameDrawEvent()
+            self.finished = True
         else:
             self.turn = (self.turn + 1) % 2
-            return "continue"    
+            return move_event  # 没有胜负，返回落子事件即可
+
+        if self.dispatcher:
+            self.dispatcher.handle(end_event)
+        return end_event
+
+        # if self.check_win(self.turn, x, y):
+        #     event = GameWonEvent(player)
+        # elif self.check_draw():
+        #     event = GameDrawEvent()
+        # else: 
+        #     event = MovePlacedEvent(x, y, player, self.board)
+        #     self.turn = (self.turn + 1) % 2
+
+        # if self.dispatcher:
+        #     self.dispatcher.handle(event)
+        # return event 
 
     def current_player(self):
         return self.players[self.turn]

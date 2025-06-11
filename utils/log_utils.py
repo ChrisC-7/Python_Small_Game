@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 from typing import List
 
-TRACE_DIR = '../logs'
+TRACE_DIR = 'logs'
 TRACE_INDEX_FILE = os.path.join(TRACE_DIR, "trace_index.txt")
 
 os.makedirs(TRACE_DIR, exist_ok=True)

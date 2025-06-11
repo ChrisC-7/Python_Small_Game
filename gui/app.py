@@ -6,9 +6,13 @@ from gui.board_canvas import BoardCanvas
 from gui.controller import GameController
 from gui.components import ControlPanel
 from gui.events import events
+import utils.gui_dispatcher_using  # 👈 这是激活 handler 注册的关键
+
+
 
 class GomokuApp(tk.Tk):
     def __init__(self):
+        # import pdb; pdb.set_trace()
         super().__init__()
         self.title("Modular Gomoku Game")
         

@@ -1,10 +1,13 @@
 # local_game.py
 import gameLogic.board as board
-from gameLogic.player import Player, Human_Player, QLearningAIPlayer, RuleBasedAIPlayer
+from gameLogic.player import Player, Human_Player, AIPlayer
 from gameLogic.rule import TicTacToeRule
 from gameLogic.game_base import GameBase
 from utils.log_utils import GameLogger
 from gameLogic.engine import GameEngine
+from utils.event_scope import cli_dispatcher
+from utils.events import GameEndEvent, InvalidMoveEvent
+from ai.ai_strategy import QLearningStrategy
 
 class LocalGame():
 
@@ -12,9 +15,9 @@ class LocalGame():
         self._players : list[Human_Player] = []
         self.init_players()
         if mode == "tictatoe":
-            self.engine = GameEngine(3, 3, self._players, GameLogger())
+            self.engine = GameEngine(3, 3, self._players, GameLogger(), dispatcher=cli_dispatcher)
         if mode == "gomoku":
-            self.engine = GameEngine(15, 5, self._players, GameLogger())
+            self.engine = GameEngine(8, 5, self._players, GameLogger(), dispatcher=cli_dispatcher)
         
     def init_players(self):
         for i in range(2):
@@ -22,8 +25,13 @@ class LocalGame():
             symbol = input(f"Enter Player {i + 1} symbol: ")
             is_ai = input(f"Is Player {i + 1} an AI player? (y/n): ").lower()=='y'
             if is_ai:
-                self._players.append(RuleBasedAIPlayer(i, name, symbol))
-                # self._players[i].load_q_table("gameLogic/q_model.json")
+                strategy = QLearningStrategy()
+                print("success")
+                strategy.load('ai/q_model.json') 
+                
+                player = AIPlayer(i, name, symbol, strategy)
+                self._players.append(player)
+                print(f"[DEBUG] Q-table loaded with {len(player.strategy.q_table)} board states.")
             else:
                 self._players.append(Human_Player(i, name, symbol))
 
@@ -42,27 +50,32 @@ class LocalGame():
     def play(self):
         while True:
             player = self.engine.current_player()
+            print(f"It's player {player.name}'s turn now.")
             x, y = player.get_move(self.engine.board.get_state())
-            result = self.engine.place_piece(x, y)
-            while not result:
+            event = self.engine.place_piece(x, y)
+
+            while isinstance(event, InvalidMoveEvent):
                 print("Invalid placement, Try again.")
                 x, y = player.get_move(self.engine.board.get_state)
-                result = self.engine.place_piece(x, y)
+                event = self.engine.place_piece(x, y)
 
 
-            print(f"{player.name} chooses ({x}, {y})")
+            # print(f"{player.name} chooses ({x}, {y})")
             print(self.engine.board)  # show current board
+            cli_dispatcher.handle(event)
 
-            if result == "win":
-                print(f"{player.name} wins!")
-            elif result == "draw":
-                print("It's a draw!")
-            else: continue
+            # if  result == "win":
+            #     print(f"{player.name} wins!")
+            # elif result == "draw":
+            #     print("It's a draw!")
+            # else: continue
 
-            choice = input("Play again? (y/n)")
-            if choice.lower() == "y":
-                self.engine.restart_game()
-            else:break
+            if isinstance(event, GameEndEvent):
+                choice = input("Play again? (y/n)")
+                if choice.lower() == "y":
+                    self.engine.restart_game()
+                else:
+                    break
         # turn = 0
         # while True:
         #     player = self._players[turn] 

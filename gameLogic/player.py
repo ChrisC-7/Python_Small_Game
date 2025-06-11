@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 import random
 from typing import List, Tuple
 from gameLogic.board import Board
-from ai.ai_strategy import AIStrategy
+from ai.ai_strategy import AIStrategy, RuleBasedStrategy
 from copy import deepcopy
 import json
 
@@ -60,7 +60,7 @@ class Human_Player(Player):
    
 class AIPlayer(Player):
 
-   def __init__(self, id, name, symbol, strategy: AIStrategy):
+   def __init__(self, id, name, symbol, strategy: AIStrategy = RuleBasedStrategy()):
       super().__init__(id, name, symbol)
       self.strategy = strategy
 
@@ -73,3 +73,11 @@ class AIPlayer(Player):
    def set_opponent(self, opponent: Player):
       super().set_opponent(opponent)
       self.strategy.set_symbols(self.symbol, opponent.symbol)   
+   
+   def load_model(self, path: str):
+        if hasattr(self.strategy, "load"):
+            self.strategy.load(path)
+
+   def save_model(self, path: str):
+        if hasattr(self.strategy, "save"):
+            self.strategy.save(path)
