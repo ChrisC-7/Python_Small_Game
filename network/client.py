@@ -1,5 +1,5 @@
 import socket
-from network.common import HOST, PORT, BUFFER_SIZE, ENCODING
+from network.common import HOST, PORT
 from network.protocol import (
     encode_message, 
     receive_message,

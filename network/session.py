@@ -1,4 +1,3 @@
-from network.common import BUFFER_SIZE
 from network.protocol import (
     encode_message,
     receive_message,
@@ -26,10 +25,11 @@ class PlayerConnection:
     def receive(self) -> dict:
         try:
             msg = receive_message(self.socket)
+            return msg
         except ConnectionClosedError as e:
             print(f"[Client] Client disconnected: {e}")
-        return msg
-
+        return None
+    
     def close(self):
         self.socket.close()        
 

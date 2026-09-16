@@ -34,8 +34,3 @@ def receive_message(sock:socket.socket) -> dict:
     msg = recv_exact(sock, num_bytes)
 
     return json.loads(msg.decode(ENCODING))
-
-# def decode_message(raw: bytes) -> dict:
-#     if not raw:
-#         raise ConnectionClosedError("Remote peer closed the connection.")
-#     return json.loads(raw.decode(ENCODING))
