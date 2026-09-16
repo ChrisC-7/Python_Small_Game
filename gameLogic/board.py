@@ -81,7 +81,7 @@ class Board:
         return self._board[x][y]
 
 
-     # get how many symbol we have in a line
+    # get how many symbol we have in a line
     def check_line(self, symbol: str, x: int, y: int, dx: int, dy: int) -> int:
         """Counts the number of consecutive identical symbols in a line 
             passing through the given position.
