@@ -216,12 +216,6 @@ python -m network.client
 
 The clients provide a player name and symbol, then send moves when the server grants their turn.
 
-### Known network-client issue
-
-The current client receives the `player id` handshake but does not yet save it into a `player_id` variable. Because the result-handling code later references `player_id`, the end-of-game client path still needs a small repair.
-
-The core server/session/protocol implementation is present, but the multiplayer path should be tested end-to-end again before being described as fully production-ready.
-
 ## Local GUI
 
 A separate Tkinter-based 15×15 five-in-a-row interface is included:
