@@ -1,5 +1,5 @@
 from network.common import BUFFER_SIZE
-from network.protocol import encode_message,decode_message
+from network.protocol import encode_message,decode_message, ConnectionClosedError
 from gameLogic.player import AIPlayer, Human_Player, Player
 from gameLogic.online_game import OnlineGame
 from utils.log_utils import GameLogger
@@ -53,83 +53,87 @@ class OnlineGameSession:
 
     def run_game_loop(self):
         print("\n===Game Start===")
-        while True:
-            current = self.connections[self.turn]
-            opponent = self.connections[(self.turn + 1) % 2 ]
-            player = current.player
+        try: 
+            while True:
+                current = self.connections[self.turn]
+                opponent = self.connections[(self.turn + 1) % 2 ]
+                player = current.player
 
-            opponent.send("wait")
-            current.send("your_turn")
-            print(f"[DEBUG] Sending your_turn to Player {player.id}")
+                opponent.send("wait")
+                current.send("your_turn")
+                print(f"[DEBUG] Sending your_turn to Player {player.id}")
 
-            move_msg = current.receive()
-            if move_msg["action"] == "disconnect":
-                break
-            
-            x, y = move_msg["data"]["x"], move_msg["data"]["y"]
-            event = self.game.engine.place_piece(x, y)
-
-            while isinstance(event, InvalidMoveEvent):
-                current.send("your_turn(re)", {})
                 move_msg = current.receive()
                 if move_msg["action"] == "disconnect":
                     break
+                
                 x, y = move_msg["data"]["x"], move_msg["data"]["y"]
                 event = self.game.engine.place_piece(x, y)
 
-            
-            self.boardcast("update", {"board": self.game.get_board_str()})
+                while isinstance(event, InvalidMoveEvent):
+                    current.send("your_turn(re)", {})
+                    move_msg = current.receive()
+                    if move_msg["action"] == "disconnect":
+                        break
+                    x, y = move_msg["data"]["x"], move_msg["data"]["y"]
+                    event = self.game.engine.place_piece(x, y)
 
-            
-            if isinstance(event, GameWonEvent):
-                winner_id = player.id
-                for conn in self.connections:
-                    conn.send("result", {"winner": winner_id})
-                print(f"[Result] Player {player.name} wins.")
-                self.logger.log_result("win")
-            elif isinstance(event, GameDrawEvent):
-                for conn in self.connections:
-                    conn.send("result", {"winner": None})
-                print("[Result] Game ends in a draw.")
-                self.logger.log_result("draw")
-            else:
-                self.turn = (self.turn + 1) % 2
-                continue
+                
+                self.boardcast("update", {"board": self.game.get_board_str()})
 
-            # check if restart
-            # restart_msg = current.receive()
-            # if restart_msg["action"] == "restart":
-            #     self.game.restart()
-            #     self.logger = GameLogger()
-            #     self.game.engine.logger = self.logger
-            #     self.turn = 0
-            #     print("[Restart] Game restarted.")
-            # else:
-            #     break
-            restart_votes = []
-
-            for conn in self.connections:
-                msg = conn.receive()
-                if msg["action"] == "restart":
-                    restart_votes.append(True)
+                
+                if isinstance(event, GameWonEvent):
+                    winner_id = player.id
+                    for conn in self.connections:
+                        conn.send("result", {"winner": winner_id})
+                    print(f"[Result] Player {player.name} wins.")
+                    self.logger.log_result("win")
+                elif isinstance(event, GameDrawEvent):
+                    for conn in self.connections:
+                        conn.send("result", {"winner": None})
+                    print("[Result] Game ends in a draw.")
+                    self.logger.log_result("draw")
                 else:
-                    restart_votes.append(False)
+                    self.turn = (self.turn + 1) % 2
+                    continue
 
-            if all(restart_votes):
-                print("[Server] Both players agreed to restart.")
-                self.game.restart()
-                self.logger = GameLogger()
-                self.game.engine.logger = self.logger
-                self.turn = 0
-                print("[Restart] Game restarted.")
-            else:
-                print("[Server] One or both players declined restart. Ending game.")
-                break
+                # check if restart
+                # restart_msg = current.receive()
+                # if restart_msg["action"] == "restart":
+                #     self.game.restart()
+                #     self.logger = GameLogger()
+                #     self.game.engine.logger = self.logger
+                #     self.turn = 0
+                #     print("[Restart] Game restarted.")
+                # else:
+                #     break
+                restart_votes = []
 
-        for conn in self.connections:
-            conn.close()
+                for conn in self.connections:
+                    msg = conn.receive()
+                    if msg["action"] == "restart":
+                        restart_votes.append(True)
+                    else:
+                        restart_votes.append(False)
+
+                if all(restart_votes):
+                    print("[Server] Both players agreed to restart.")
+                    self.game.restart()
+                    self.logger = GameLogger()
+                    self.game.engine.logger = self.logger
+                    self.turn = 0
+                    print("[Restart] Game restarted.")
+                else:
+                    print("[Server] One or both players declined restart. Ending game.")
+                    break
+
+        except ConnectionClosedError as e:
+            print(f"[Server] Client disconnected: {e}")
+        finally:
+            for conn in self.connections:
+                conn.close()
+
         print("Game ended. All connections closed.")
-
     def boardcast(self, action: str, data: dict):
         for conn in self.connections:
             conn.send(action, data)

@@ -1,6 +1,10 @@
 import socket
 from network.common import HOST, PORT, BUFFER_SIZE, ENCODING
-from network.protocol import encode_message, decode_message
+from network.protocol import (
+    encode_message, 
+    decode_message, 
+    ConnectionClosedError
+)
 import gameLogic.board as board
 
 def get_numeric_input(prompt: str) -> int:
@@ -39,8 +43,12 @@ player_id = msg["data"]["id"]
 # enter the loop, get the piece placement by user's input x, y
 while True:
     print("[Client] Waiting for message...")
-    msg1 = s.recv(BUFFER_SIZE) 
-    msg = decode_message(msg1)
+    try:
+        msg1 = s.recv(BUFFER_SIZE)
+        msg = decode_message(msg1)
+    except ConnectionClosedError:
+        print("[Client] Server closed the connection.")
+        break
     action = msg["action"]
     data = msg["data"]
     if action == "your_turn" :
