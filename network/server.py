@@ -11,12 +11,7 @@ def main():
     print(f"Server listening on {HOST}:{PORT}")
 
     session = OnlineGameSession()
-    while True:
-        try:
-            session.accept_players(server_socket)
-            break
-        except ConnectionClosedError as e:
-            print("Clinents connect fail, please reconnect")
+    session.accept_players(server_socket)
     session.run_game_loop()    
 
 if __name__ == "__main__":

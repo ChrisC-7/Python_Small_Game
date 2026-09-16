@@ -5,7 +5,6 @@ from network.protocol import (
     receive_message,
     ConnectionClosedError
 )
-import gameLogic.board as board
 
 def get_numeric_input(prompt: str) -> int:
     while True:
@@ -33,7 +32,7 @@ s.sendall(encode_message("intro", {"name": name, "symbol": symbol[0]}))
 
 
 msg = receive_message(s)
-
+player_id = msg["data"]["id"]
 while True:
     print("[Client] Waiting for message...")
     try:

@@ -41,8 +41,12 @@ class OnlineGameSession:
         print("Waiting for 2 players to connect...")
         while len(self.connections) < 2:
             conn, addr = server_socket.accept()
-            
-            intro_msg = receive_message(conn)
+
+            try:
+                intro_msg = receive_message(conn)
+            except ConnectionClosedError as e:
+                print("Clients connect fail, please reconnect")
+                continue
             name = intro_msg["data"]["name"]
             symbol = intro_msg["data"]["symbol"]
             player = Human_Player(len(self.connections), name, symbol)
