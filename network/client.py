@@ -2,7 +2,7 @@ import socket
 from network.common import HOST, PORT, BUFFER_SIZE, ENCODING
 from network.protocol import (
     encode_message, 
-    decode_message, 
+    receive_message,
     ConnectionClosedError
 )
 import gameLogic.board as board
@@ -32,7 +32,7 @@ symbol = input("Please input your player's symbol(one character): ")
 s.send(encode_message("intro", {"name": name, "symbol": symbol[0]}))
 # msg = decode_message(s.recv(BUFFER_SIZE))
 
-msg = decode_message(s.recv(BUFFER_SIZE))
+msg = receive_message(s)
 player_id = msg["data"]["id"]
 # name = input("Please input your player's name: ")
 # symbol = input("Please input your player's symbol(one character): ")
@@ -44,8 +44,7 @@ player_id = msg["data"]["id"]
 while True:
     print("[Client] Waiting for message...")
     try:
-        msg1 = s.recv(BUFFER_SIZE)
-        msg = decode_message(msg1)
+        msg = receive_message(s)
     except ConnectionClosedError:
         print("[Client] Server closed the connection.")
         break

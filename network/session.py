@@ -1,5 +1,9 @@
 from network.common import BUFFER_SIZE
-from network.protocol import encode_message,decode_message, ConnectionClosedError
+from network.protocol import (
+    encode_message,
+    receive_message,
+    ConnectionClosedError
+)
 from gameLogic.player import AIPlayer, Human_Player, Player
 from gameLogic.online_game import OnlineGame
 from utils.log_utils import GameLogger
@@ -20,7 +24,7 @@ class PlayerConnection:
         self.socket.send(msg)
     
     def receive(self) -> dict:
-        return decode_message(self.socket.recv(BUFFER_SIZE))
+        return receive_message(self.socket)
 
     def close(self):
         self.socket.close()        
@@ -40,7 +44,7 @@ class OnlineGameSession:
             
 
 
-            intro_msg = decode_message(conn.recv(BUFFER_SIZE))
+            intro_msg = receive_message(conn)
             name = intro_msg["data"]["name"]
             symbol = intro_msg["data"]["symbol"]
             player = Human_Player(len(self.connections), name, symbol)
