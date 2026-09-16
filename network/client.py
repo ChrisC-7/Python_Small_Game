@@ -30,20 +30,10 @@ except Exception as e:
 name = input("Please input your player's name: ")
 symbol = input("Please input your player's symbol(one character): ")
 s.sendall(encode_message("intro", {"name": name, "symbol": symbol[0]}))
-# msg = decode_message(s.recv(BUFFER_SIZE))
 
-try:
-    msg = receive_message(s)
-except ConnectionClosedError as e:
-    print(f"[Client] Client disconnected: {e}")
-player_id = msg["data"]["id"]
-# name = input("Please input your player's name: ")
-# symbol = input("Please input your player's symbol(one character): ")
-# s.send(encode_message("intro",
-#                       {"name" : name, 
-#                        "symbol" : symbol[0] }))
 
-# enter the loop, get the piece placement by user's input x, y
+msg = receive_message(s)
+
 while True:
     print("[Client] Waiting for message...")
     try:

@@ -23,12 +23,8 @@ class PlayerConnection:
         self.socket.sendall(msg)
     
     def receive(self) -> dict:
-        try:
-            msg = receive_message(self.socket)
-            return msg
-        except ConnectionClosedError as e:
-            print(f"[Client] Client disconnected: {e}")
-        return None
+        msg = receive_message(self.socket)
+        return msg
     
     def close(self):
         self.socket.close()        
@@ -46,11 +42,7 @@ class OnlineGameSession:
         while len(self.connections) < 2:
             conn, addr = server_socket.accept()
             
-
-            try:
-                intro_msg = receive_message(conn)
-            except ConnectionClosedError as e:
-                print(f"[Client] Client disconnected: {e}")
+            intro_msg = receive_message(conn)
             name = intro_msg["data"]["name"]
             symbol = intro_msg["data"]["symbol"]
             player = Human_Player(len(self.connections), name, symbol)
