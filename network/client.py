@@ -29,10 +29,13 @@ except Exception as e:
     exit(1)
 name = input("Please input your player's name: ")
 symbol = input("Please input your player's symbol(one character): ")
-s.send(encode_message("intro", {"name": name, "symbol": symbol[0]}))
+s.sendall(encode_message("intro", {"name": name, "symbol": symbol[0]}))
 # msg = decode_message(s.recv(BUFFER_SIZE))
 
-msg = receive_message(s)
+try:
+    msg = receive_message(s)
+except ConnectionClosedError as e:
+    print(f"[Client] Client disconnected: {e}")
 player_id = msg["data"]["id"]
 # name = input("Please input your player's name: ")
 # symbol = input("Please input your player's symbol(one character): ")
@@ -55,13 +58,13 @@ while True:
         x = get_numeric_input("Input row (x): ")
         y = get_numeric_input("Input col (y): ")
         # send the placement's info as networking message
-        s.send(encode_message("move", {"x": x, "y": y}))
+        s.sendall(encode_message("move", {"x": x, "y": y}))
     elif action == "your_turn(re)" :
         print("Your input is not valid, please re-enter")
         x = get_numeric_input("Input row (x): ")
         y = get_numeric_input("Input col (y): ")
         # send the placement's info as networking message
-        s.send(encode_message("move", {"x": x, "y": y}))
+        s.sendall(encode_message("move", {"x": x, "y": y}))
     elif action == "wait":
         print("Sorry it's not your turn, please wait")
     elif action == "result":
@@ -74,7 +77,7 @@ while True:
         
         choice = input("Play again? (y/n): ")
         if choice.lower() == 'y':
-            s.send(encode_message("restart", {}))
+            s.sendall(encode_message("restart", {}))
         else: break
     elif action == "update":
         print(data["board"])
